@@ -7,7 +7,6 @@ class AppDelegate
     
     viewController = MotionGLController.alloc.initWithNibName(nil, bundle:nil)
     @window.addSubview(viewController.view)
-    viewController.view = @view
     viewController.preferredFramesPerSecond = 60
     @window.rootViewController = viewController    
     true
