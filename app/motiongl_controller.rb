@@ -1,11 +1,6 @@
 class MotionGLController < GLKViewController
   
-  def init
-    puts "init"
-  end
-  
   def loadView
-    puts "loadingView"
     self.view = GLKView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     @increasing = true
     @curRed = 0.0
@@ -20,7 +15,6 @@ class MotionGLController < GLKViewController
     options = {GLKTextureLoaderOriginBottomLeft => true}
     
     path = NSBundle.mainBundle.pathForResource("rubymotion", ofType:"png")
-    puts "path = #{path.inspect}"
     perror = Pointer.new(:object) 
     info = GLKTextureLoader.textureWithContentsOfFile(path, options:options, error:perror)
     
@@ -47,15 +41,12 @@ class MotionGLController < GLKViewController
     @vertexBuffer = vertexBufferPtr[0]
     glBindBuffer(GL_ARRAY_BUFFER, @vertexBuffer)
     glBufferData(GL_ARRAY_BUFFER, @vertices.size*4, @vertices.ptr, GL_STATIC_DRAW)
-    puts "vertex buffer = #{@vertexBuffer}"
  
     indexBufferPtr = Pointer.new(:uchar)
     glGenBuffers(1, indexBufferPtr)
     @indexBuffer = indexBufferPtr[0]
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, @indexBuffer)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, @indices.size*4, @indices.ptr, GL_STATIC_DRAW)
-    puts "index buffer = #{@indexBuffer}"
-    
   end
   
   def tearDownGL 
@@ -75,7 +66,6 @@ class MotionGLController < GLKViewController
   def viewDidLoad
     super
 
-    puts "in viewDidLoad"
     @context = EAGLContext.alloc.initWithAPI(KEAGLRenderingAPIOpenGLES2)
 
     if (!@context)
