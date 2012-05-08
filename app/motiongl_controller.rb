@@ -16,12 +16,25 @@ class MotionGLController < GLKViewController
     EAGLContext.setCurrentContext(@context)
     
     @effect = GLKBaseEffect.alloc.init
+    
+    options = {GLKTextureLoaderOriginBottomLeft => true}
+    
+    path = NSBundle.mainBundle.pathForResource("rubymotion", ofType:"png")
+    puts "path = #{path.inspect}"
+    perror = Pointer.new(:object) 
+    info = GLKTextureLoader.textureWithContentsOfFile(path, options:options, error:perror)
+    
+    if (info == nil) 
+      puts("Error loading file: %@", perror[0].localizedDescription)
+    end
+    @effect.texture2d0.name = info.name
+    @effect.texture2d0.enabled = true
  
     @vertices = VertexData.new([
-      [ 1.0, -1.0, 0.0, 1.0, 0.0, 0.0, 1.0],
-      [ 1.0,  1.0, 0.0, 0.0, 1.0, 0.0, 1.0],
-      [-1.0,  1.0, 0.0, 0.0, 0.0, 1.0, 1.0],
-      [-1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+      [ 1.0, -1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0],
+      [ 1.0,  1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0],
+      [-1.0,  1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0],
+      [-1.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]
     ])
     
     @indices = IndexData.new(
@@ -93,9 +106,13 @@ class MotionGLController < GLKViewController
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, @indexBuffer)
 
     glEnableVertexAttribArray(GLKVertexAttribPosition)
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 7*4, Pointer.magic_cookie(0))
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 9*4, Pointer.magic_cookie(0))
+    
     glEnableVertexAttribArray(GLKVertexAttribColor)
-    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, 7*4, Pointer.magic_cookie(3*4))
+    glVertexAttribPointer(GLKVertexAttribColor, 4, GL_FLOAT, GL_FALSE, 9*4, Pointer.magic_cookie(3*4))
+    
+    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, 9*4, Pointer.magic_cookie(7*4));
     
     glDrawElements(GL_TRIANGLES, @indices.size, GL_UNSIGNED_BYTE, Pointer.magic_cookie(0))
   end
